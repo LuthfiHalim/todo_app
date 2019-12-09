@@ -5,15 +5,18 @@ import 'package:flutter_statefulwidget_loginpage_luthfi/dashboard.dart';
 import 'package:flutter_statefulwidget_loginpage_luthfi/detailpage.dart';
 import 'package:flutter_statefulwidget_loginpage_luthfi/loginpage.dart';
 import 'package:flutter_statefulwidget_loginpage_luthfi/pages.dart';
+import 'package:flutter_statefulwidget_loginpage_luthfi/splash_screen.dart';
 
 class Router{
   Route<dynamic> getRoute(settings){
     Map<String, dynamic> arguments = settings.arguments;
 
     switch (settings.name) {
-      case Pages.Home :
+      case Pages.Splash :
+        return _buildRoute(settings, SplashScreen());
+      case Pages.Login :
         return _buildRoute(settings, LoginPage());
-      case (Pages.List):
+      case (Pages.Home):
         return _buildRoute(settings, Dashboard());
       case Pages.Add :
         return _buildRoute(settings, AddTodo(arguments['handleToDo']));

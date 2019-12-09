@@ -4,16 +4,18 @@ class Todo {
   final String name;
   final String address;
   final int id;
+  final String imagepath;
 
   bool checked = false;
 
-  Todo(this.name, this.address, this.id, this. checked);
+  Todo(this.name, this.address, this.id, this. checked, this.imagepath);
 
   Todo.fromJSON(Map<String,dynamic> response)
       : name = response['name'],
         address = response['address'],
         checked = response['favorite'],
-        id = response['id']
+        id = response['id'],
+        imagepath = response['image_url']
         ;
   
   static getTodos() async {
@@ -26,7 +28,7 @@ class Todo {
   }
 
   static postTodo(data) async {
-    var response = await Dio().post("https://address-book-exp-api.herokuapp.com/users", data: data);
+    var response = await Dio().post("https://address-book-exp-api.herokuapp.com/users", data: await data);
     return response;
   }
   static patchTodo(data, id) async {

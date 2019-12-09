@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_statefulwidget_loginpage_luthfi/pages.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:validate/validate.dart';
 
 class LoginPage extends StatefulWidget {
@@ -6,7 +8,7 @@ class LoginPage extends StatefulWidget {
   State<StatefulWidget> createState() => _LoginPageState();
 }
 class _LoginData {
-  String email = '';
+  String username = '';
   String password = '';
 }
 class _LoginPageState extends State<LoginPage> {
@@ -30,14 +32,14 @@ class _LoginPageState extends State<LoginPage> {
     }
     return null;
   }
-  submit(BuildContext context) {
+  submit(BuildContext context) async{
     // First validate form.
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save(); // Save our form now.
       print('Printing the login data.');
-      print('Username: ${_data.email}');
+      print('Username: ${_data.username}');
       print('Password: ${_data.password}');
-      if (_data.email == "LuthfiHalim" &&
+      if (_data.username == "LuthfiHalim" &&
           _data.password == "123123123") {
         final snackBar = SnackBar(
           content: Text('Ready to Go'),
@@ -51,9 +53,12 @@ class _LoginPageState extends State<LoginPage> {
         );
         // Find the Scaffold in the widget tree and use
         // it to show a SnackBar.
+        final simpanData = await SharedPreferences.getInstance();
+        simpanData.setString('token', _data.username);
         _scaffoldKey.currentState.showSnackBar(snackBar);
-        Navigator.pushReplacementNamed(context, '/dashboard');
-      } else {
+        Navigator.pushReplacementNamed(context, Pages.Home);
+      } 
+      else {
         final snackBar = SnackBar(
           content: Text('Upsy doopsy!'),
           backgroundColor: Colors.red,
@@ -109,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                       hintText: 'BudiSetiawan', labelText: 'Username'),
                   validator: this._validateAlphaNumeric,
                   onSaved: (String value) {
-                    this._data.email = value;
+                    this._data.username = value;
                   }),
               TextFormField(
                   obscureText: true, // Use secure text for passwords.

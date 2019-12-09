@@ -20,7 +20,7 @@ class DetailScreen extends StatelessWidget {
         decoration: InputDecoration(
         hintText: 'nyuci baju pake mesin cuci', labelText: 'Deskripsi'),
         onFieldSubmitted: (val) {
-           Todo kerj = Todo(kerjaan.name,val,kerjaan.id,kerjaan.checked);
+           Todo kerj = Todo(kerjaan.name,val,kerjaan.id,kerjaan.checked, kerjaan.imagepath);
             fungsi(kerj, index);
             Navigator.pop(context);
           },
@@ -48,7 +48,7 @@ class DetailScreenEdit extends StatelessWidget {
         hintText: 'Nyuci Baju', labelText: 'Judul Kerjaan'),
 
          onFieldSubmitted: (val) {
-           Todo kerj = Todo(val,kerjaan.address,kerjaan.id,kerjaan.checked);
+           Todo kerj = Todo(val,kerjaan.address,kerjaan.id,kerjaan.checked, kerjaan.imagepath);
             fungsi(kerj, index);
             Navigator.pop(context);
           },

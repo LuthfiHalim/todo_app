@@ -123,8 +123,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             title: Text('History'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            title: Text('Admin'),
+            icon: Icon(Icons.exit_to_app),
+            title: Text('Logout'),
           ),
         ],
         currentIndex: _selectedIndex,

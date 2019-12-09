@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statefulwidget_loginpage_luthfi/pages.dart';
@@ -52,32 +54,49 @@ class AddTodoState extends State<AddTodo> {
       appBar: AppBar(
         title: Text('Tambah Kerjaan')
       ),
-      body: Column(children: <Widget>[
-        TextField(
-          controller: todoController,
-          decoration: InputDecoration(
-            helperText: 'Tambah Kerjaan'
-          ),
-        ),
-        // Container(
-        //   child: path != null
-        //   ? Image.file(File(path))
-        //   : IconButton(
-        //     icon: Icon(Icons.camera),
-        //     onPressed: (){
-        //       navigateAndGetPhoto();
-        //     },
-        //   ),
-        // ),
-        // RaisedButton.icon(
-        //   icon: Icon(Icons.add),
-        //   onPressed: (){
-        //     handleToDo(todoController.text, path);
-        //     Navigator.pop(context);
-        //   },
-        //   label : Expanded(child: Card(),)
-        // )
-      ],),
+      body: 
+      Column(
+        children: <Widget>[
+          Column(children: <Widget>[
+            TextField(
+              controller: todoController,
+              decoration: InputDecoration(
+                helperText: 'Tambah Kerjaan'
+              ),
+            ),
+            Container(
+              child: path != null
+              ? 
+              // ListView(
+              //   children: <Widget>[
+                  Image.file(File(path))
+              //   ],
+              // )    
+              : IconButton(
+                icon: Icon(Icons.camera),
+                onPressed: (){
+                  navigateAndGetPhoto();
+                },
+              ),
+            ),
+            RaisedButton.icon(
+              icon: Icon(Icons.add),
+              onPressed: (){
+                
+              },
+              label : Expanded(child: Card(),)
+            )
+          ],),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: Icon(Icons.work),
+        label: Text('Add'),
+        onPressed: (){
+          handleToDo(todoController.text, path);
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 }

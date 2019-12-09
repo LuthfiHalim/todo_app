@@ -2,13 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statefulwidget_loginpage_luthfi/addtodo.dart';
 import 'package:flutter_statefulwidget_loginpage_luthfi/detailpage.dart';
+import 'package:flutter_statefulwidget_loginpage_luthfi/pages.dart';
 import 'package:flutter_statefulwidget_loginpage_luthfi/todo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'box_widget.dart';
 import 'detailpage.dart';
 
 class Dashboard extends StatefulWidget {
-
-
   @override
   State<StatefulWidget> createState() {
     return _DashboardState();
@@ -20,17 +20,153 @@ class _InputData {
   int urutan;
 }
 
-_InputData data = _InputData();
 
 class _DashboardState extends State<Dashboard> {
+  
+  int _selectedIndex = 0;
+
+  Future<FormData> photo({path, name}) async {
+    return FormData.fromMap({
+      "name" : name,
+      "favorite" : false,
+      "photo" : await MultipartFile.fromFile(path, filename: "user-photo")
+    });
+  }
+    
+  handleToDo( val, path) {
+    Todo.postTodo(photo(path: path, name: val));
+  }
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Widget bodyChoice(index){
+    switch (index) {
+      case 0 :
+        return Home();
+
+      case 1 :
+        return Request(); 
+
+      case 2 :
+        return History();   
+
+      case 3 :
+        return Logout();    
+      default:
+        return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('List Kerjaan')),
+      body: 
+      bodyChoice(_selectedIndex),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton.extended(
+
+        elevation: 10,
+        backgroundColor: Colors.blue,
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddTodo(handleToDo)));
+        },
+        icon: Icon(Icons.work),
+        label: Text('Add'),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            title: Text('Request'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assessment),
+            title: Text('History'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            title: Text('MyProfile'),
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.blueAccent,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+
+class Logout extends StatelessWidget{
+
+  logout(context)async{
+    final simpanData = await SharedPreferences.getInstance();
+    simpanData.remove('token');
+    Navigator.pushReplacementNamed(context, Pages.Login);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: RaisedButton(
+        child: Text('Logout'),
+        onPressed: (){
+          logout(context);
+        },
+      ),),
+    );
+  } 
+}
+class History extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: RaisedButton(
+        child: Text('History'),
+        onPressed: (){},
+      ),),
+    );
+  } 
+}
+class Request extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: RaisedButton(
+        child: Text('Request'),
+        onPressed: (){},
+      ),),
+    );
+  } 
+}
+
+class Home extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return StateHome();
+  }
+}
+
+class StateHome extends State<Home>{
   List<Todo> kerjaan;
   bool checkAll = false;
   String filtered = "total";
+  _InputData data = _InputData();
   bool loading = true;
 
   void getTodos() async {
     var response = await Todo.getTodos();
-    print(response);
     setState(() {
       kerjaan = response;
       loading = false;
@@ -41,19 +177,6 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     print('init');
     getTodos();
-  }
-
-  Future<FormData> photo({path, name}) async {
-    return FormData.fromMap({
-      "name" : name,
-      "favorite" : false,
-      "photo" : await MultipartFile.fromFile(path, filename: "user-photo")
-    });
-  }
-
-  handleToDo(val, path) {
-      Todo.postTodo(photo(path: path, name: val));
-      getTodos();
   }
 
   editKerjaan(Todo todo, index) {
@@ -96,6 +219,7 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+
   int jumlahChecked(){
     int jumlah = 0;
     setState(() {
@@ -107,39 +231,38 @@ class _DashboardState extends State<Dashboard> {
     });
     return jumlah;
   }
-
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('List Kerjaan')),
-      body: loading
-      ? Text('loading')
-      : Column(
+    return Column(
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
+          Expanded(
+            flex: 4,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
               Box(
                 status: 'Done',
                 warna: Colors.green,
-                jumlah: jumlahChecked(),
+                jumlah: loading ? 0 : jumlahChecked(),
                 icon: Icon(Icons.check),
               ),
               Box(
                 status: 'Kerjain',
                 warna: Colors.red,
-                jumlah: kerjaan.length - jumlahChecked(),
+                jumlah: loading ? 0 : kerjaan.length - jumlahChecked(),
                 icon: Icon(Icons.calendar_today),
               ),
               Box(
                 status: 'Total',
                 warna: Colors.black,
-                jumlah: kerjaan.length,
+                jumlah: loading ? 0 : kerjaan.length,
                 icon: Icon(Icons.people),
               ),
-            ],
+            ],)
           ),
           Expanded(
+            flex: 1,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -193,10 +316,13 @@ class _DashboardState extends State<Dashboard> {
                 )
             ],),
           ),
-          Container(
-            padding: EdgeInsets.only(top: 10),
-            width: MediaQuery.of(context).size.width*14/15,
-            height: MediaQuery.of(context).size.height*6/10,
+          loading
+          ? Expanded(flex:7,child:Center(child:Text('loading')))
+          : Expanded(
+            // padding: EdgeInsets.only(top: 10),
+            // width: MediaQuery.of(context).size.width*14/15,
+            // height: MediaQuery.of(context).size.height*6/10,
+            flex: 7,
             child: kerjaan.length == 0 
             ? Text('''Tambahkan Kerjaan!
 
@@ -237,7 +363,12 @@ class _DashboardState extends State<Dashboard> {
                                         fungsi: editKerjaan,
                                       )));
                         },
-                        leading: Icon(Icons.work),
+                        leading: kerjaan[index].imagepath == null
+                        ? Icon(Icons.work)
+                        :  CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          child: Image.network(kerjaan[index].imagepath),
+                        ),
                         trailing: Checkbox(
                           value: kerjaan[index].checked,
                           onChanged: (val) {
@@ -266,17 +397,6 @@ class _DashboardState extends State<Dashboard> {
             ),
           )
           ],
-       ),
-      floatingActionButton: FloatingActionButton.extended(
-        elevation: 10,
-        backgroundColor: Colors.blue,
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => AddTodo(handleToDo)));
-        },
-        icon: Icon(Icons.work),
-        label: Text('Add'),
-      ),
-    );
-  }
+       );
+  } 
 }
